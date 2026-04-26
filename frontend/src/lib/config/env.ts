@@ -33,7 +33,7 @@ function getEnvBoolean(key: string, defaultValue: boolean): boolean {
 
 export const env: EnvConfig = {
   api: {
-    baseUrl: getEnvVar('NEXT_PUBLIC_API_URL', 'http://localhost:3001/api'),
+    baseUrl: getEnvVar('NEXT_PUBLIC_API_URL', 'http://localhost:3001'),
     timeout: getEnvNumber('NEXT_PUBLIC_API_TIMEOUT', 30000),
   },
   app: {

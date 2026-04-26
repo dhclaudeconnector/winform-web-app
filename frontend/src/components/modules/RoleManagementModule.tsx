@@ -75,7 +75,7 @@ export function RoleManagementModule() {
   const loadRoles = async () => {
     try {
       console.log('Loading roles...')
-      const data = await apiClient.get<Role[]>('/admin/roles')
+      const data = await apiClient.get<Role[]>('/api/admin/roles')
       console.log('Roles loaded:', data)
       setRoles(data)
     } catch (err) {
@@ -87,7 +87,7 @@ export function RoleManagementModule() {
   const loadModules = async () => {
     try {
       console.log('Loading modules...')
-      const data = await apiClient.get<Module[]>('/admin/modules')
+      const data = await apiClient.get<Module[]>('/api/admin/modules')
       console.log('Modules loaded:', data)
       setModules(data)
     } catch (err) {
@@ -99,7 +99,7 @@ export function RoleManagementModule() {
   const loadPermissions = async () => {
     try {
       console.log('Loading permissions...')
-      const data = await apiClient.get<Permission[]>('/admin/permissions')
+      const data = await apiClient.get<Permission[]>('/api/admin/permissions')
       console.log('Permissions loaded:', data)
       setPermissions(data)
     } catch (err) {
@@ -114,7 +114,7 @@ export function RoleManagementModule() {
     setError('')
 
     try {
-      const data = await apiClient.get<RolePermission[]>(`/admin/roles/${role.id}/permissions`)
+      const data = await apiClient.get<RolePermission[]>(`/api/admin/roles/${role.id}/permissions`)
       const permMap: Record<number, boolean> = {}
       data.forEach((rp) => {
         permMap[rp.permission_id] = rp.granted
@@ -142,7 +142,7 @@ export function RoleManagementModule() {
           granted,
         }))
 
-      await apiClient.post(`/admin/roles/${selectedRole.id}/permissions`, {
+      await apiClient.post(`/api/admin/roles/${selectedRole.id}/permissions`, {
         permissions: permissionsToUpdate,
       })
 

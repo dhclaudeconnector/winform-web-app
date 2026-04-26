@@ -64,26 +64,26 @@ export interface OrderListResponse {
 export const orderService = {
   getAll: async (params?: OrderListParams): Promise<OrderListResponse> => {
     const queryString = new URLSearchParams(params as any).toString()
-    return apiClient.get<OrderListResponse>(`/orders${queryString ? `?${queryString}` : ''}`)
+    return apiClient.get<OrderListResponse>(`/api/orders${queryString ? `?${queryString}` : ''}`)
   },
 
   getById: async (id: string): Promise<Order> => {
-    return apiClient.get<Order>(`/orders/${id}`)
+    return apiClient.get<Order>(`/api/orders/${id}`)
   },
 
   create: async (data: OrderCreateRequest): Promise<Order> => {
-    return apiClient.post<Order>('/orders', data)
+    return apiClient.post<Order>('/api/orders', data)
   },
 
   update: async (id: string, data: OrderUpdateRequest): Promise<Order> => {
-    return apiClient.put<Order>(`/orders/${id}`, data)
+    return apiClient.put<Order>(`/api/orders/${id}`, data)
   },
 
   delete: async (id: string): Promise<void> => {
-    return apiClient.delete<void>(`/orders/${id}`)
+    return apiClient.delete<void>(`/api/orders/${id}`)
   },
 
   updateStatus: async (id: string, status: Order['status']): Promise<Order> => {
-    return apiClient.patch<Order>(`/orders/${id}/status`, { status })
+    return apiClient.patch<Order>(`/api/orders/${id}/status`, { status })
   },
 }

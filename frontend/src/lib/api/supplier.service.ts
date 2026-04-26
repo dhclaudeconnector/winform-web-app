@@ -51,26 +51,26 @@ export interface SupplierListResponse {
 export const supplierService = {
   getAll: async (params?: SupplierListParams): Promise<SupplierListResponse> => {
     const queryString = new URLSearchParams(params as any).toString()
-    return apiClient.get<SupplierListResponse>(`/suppliers${queryString ? `?${queryString}` : ''}`)
+    return apiClient.get<SupplierListResponse>(`/api/suppliers${queryString ? `?${queryString}` : ''}`)
   },
 
   getById: async (id: string): Promise<Supplier> => {
-    return apiClient.get<Supplier>(`/suppliers/${id}`)
+    return apiClient.get<Supplier>(`/api/suppliers/${id}`)
   },
 
   create: async (data: SupplierCreateRequest): Promise<Supplier> => {
-    return apiClient.post<Supplier>('/suppliers', data)
+    return apiClient.post<Supplier>('/api/suppliers', data)
   },
 
   update: async (id: string, data: SupplierUpdateRequest): Promise<Supplier> => {
-    return apiClient.put<Supplier>(`/suppliers/${id}`, data)
+    return apiClient.put<Supplier>(`/api/suppliers/${id}`, data)
   },
 
   delete: async (id: string): Promise<void> => {
-    return apiClient.delete<void>(`/suppliers/${id}`)
+    return apiClient.delete<void>(`/api/suppliers/${id}`)
   },
 
   bulkDelete: async (ids: string[]): Promise<void> => {
-    return apiClient.post<void>('/suppliers/bulk-delete', { ids })
+    return apiClient.post<void>('/api/suppliers/bulk-delete', { ids })
   },
 }

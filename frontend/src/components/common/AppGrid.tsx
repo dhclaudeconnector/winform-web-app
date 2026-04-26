@@ -16,15 +16,17 @@ interface AppGridProps<T> {
   editable?: boolean
   loading?: boolean
   onCellValueChanged?: (row: T) => void
+  getRowId?: (params: any) => string
 }
 
-export function AppGrid<T extends { id?: string }>({
+export function AppGrid<T extends Record<string, any>>({
   rowData,
   columnDefs,
   onRowSelected,
   height = '100%',
   loading,
   onCellValueChanged,
+  getRowId,
 }: AppGridProps<T>) {
   const mode = useAppStore((state) => state.mode)
 
@@ -60,6 +62,7 @@ export function AppGrid<T extends { id?: string }>({
         paginationPageSize={10}
         paginationPageSizeSelector={[10, 20, 50, 100]}
         overlayNoRowsTemplate={loading ? 'Đang tải dữ liệu...' : 'Không có dữ liệu'}
+        getRowId={getRowId}
         onSelectionChanged={(event) => {
           const selected = event.api.getSelectedRows()
           onRowSelected?.(selected[0] ?? null)

@@ -37,34 +37,34 @@ export const authService = {
    * Login user
    */
   login: async (credentials: LoginRequest): Promise<LoginResponse> => {
-    return apiClient.post<LoginResponse>('/auth/login', credentials, { skipAuth: true })
+    return apiClient.post<LoginResponse>('/api/auth/login', credentials, { skipAuth: true })
   },
 
   /**
    * Logout user
    */
   logout: async (): Promise<void> => {
-    return apiClient.post<void>('/auth/logout', {})
+    return apiClient.post<void>('/api/auth/logout', {})
   },
 
   /**
    * Get current user profile
    */
   getProfile: async (): Promise<User> => {
-    return apiClient.get<User>('/auth/profile')
+    return apiClient.get<User>('/api/auth/profile')
   },
 
   /**
    * Refresh token
    */
   refreshToken: async (): Promise<{ user: User }> => {
-    return apiClient.post<{ user: User }>('/auth/refresh', {})
+    return apiClient.post<{ user: User }>('/api/auth/refresh', {})
   },
 
   /**
    * Change password
    */
   changePassword: async (oldPassword: string, newPassword: string): Promise<void> => {
-    return apiClient.post<void>('/auth/change-password', { oldPassword, newPassword })
+    return apiClient.post<void>('/api/auth/change-password', { oldPassword, newPassword })
   },
 }

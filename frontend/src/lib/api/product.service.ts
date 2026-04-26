@@ -56,41 +56,41 @@ export const productService = {
    */
   getAll: async (params?: ProductListParams): Promise<ProductListResponse> => {
     const queryString = new URLSearchParams(params as any).toString()
-    return apiClient.get<ProductListResponse>(`/products${queryString ? `?${queryString}` : ''}`)
+    return apiClient.get<ProductListResponse>(`/api/products${queryString ? `?${queryString}` : ''}`)
   },
 
   /**
    * Get product by ID
    */
   getById: async (id: string): Promise<Product> => {
-    return apiClient.get<Product>(`/products/${id}`)
+    return apiClient.get<Product>(`/api/products/${id}`)
   },
 
   /**
    * Create new product
    */
   create: async (data: ProductCreateRequest): Promise<Product> => {
-    return apiClient.post<Product>('/products', data)
+    return apiClient.post<Product>('/api/products', data)
   },
 
   /**
    * Update product
    */
   update: async (id: string, data: ProductUpdateRequest): Promise<Product> => {
-    return apiClient.put<Product>(`/products/${id}`, data)
+    return apiClient.put<Product>(`/api/products/${id}`, data)
   },
 
   /**
    * Delete product
    */
   delete: async (id: string): Promise<void> => {
-    return apiClient.delete<void>(`/products/${id}`)
+    return apiClient.delete<void>(`/api/products/${id}`)
   },
 
   /**
    * Bulk delete products
    */
   bulkDelete: async (ids: string[]): Promise<void> => {
-    return apiClient.post<void>('/products/bulk-delete', { ids })
+    return apiClient.post<void>('/api/products/bulk-delete', { ids })
   },
 }

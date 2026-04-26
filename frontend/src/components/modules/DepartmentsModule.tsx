@@ -9,6 +9,8 @@ import { CrudToolbar } from '@/components/common/CrudToolbar'
 import { AppGrid } from '@/components/common/AppGrid'
 import { FormDialog, ConfirmDialog } from '@/components/common/FormDialog'
 import { useAppStore } from '@/lib/store/uiStore'
+import { apiClient } from '@/lib/apiClient'
+import { useApiError } from '@/hooks/useApiError'
 
 interface Department {
   id: string
@@ -25,40 +27,33 @@ export function DepartmentsModule() {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [formData, setFormData] = useState<Partial<Department>>({})
   const [searchValue, setSearchValue] = useState('')
+  const { handleError, ErrorSnackbar } = useApiError()
 
   const { data: departments = [], isLoading } = useQuery({
     queryKey: ['departments'],
     queryFn: async () => {
-      const res = await fetch('http://localhost:3001/api/departments')
-      const json = await res.json()
-      return Array.isArray(json) ? json : (json.data || [])
+      const result = await apiClient.get<Department[]>('/api/departments')
+      return result || []
     },
   })
 
   const createMutation = useMutation({
     mutationFn: async (data: Partial<Department>) => {
-      const res = await fetch('http://localhost:3001/api/departments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      })
-      return res.json()
+      return await apiClient.post<Department>('/api/departments', data)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['departments'] })
       setDialogOpen(false)
       setFormData({})
+    },
+    onError: (error) => {
+      handleError(error, 'tạo khoa phòng')
     },
   })
 
   const updateMutation = useMutation({
     mutationFn: async (data: Department) => {
-      const res = await fetch(`http://localhost:3001/api/departments/${data.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      })
-      return res.json()
+      return await apiClient.put<Department>(`/api/departments/${data.id}`, data)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['departments'] })
@@ -66,16 +61,22 @@ export function DepartmentsModule() {
       setFormData({})
       setSelectedDept(null)
     },
+    onError: (error) => {
+      handleError(error, 'cập nhật khoa phòng')
+    },
   })
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await fetch(`http://localhost:3001/api/departments/${id}`, { method: 'DELETE' })
+      await apiClient.delete(`/api/departments/${id}`)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['departments'] })
       setConfirmOpen(false)
       setSelectedDept(null)
+    },
+    onError: (error) => {
+      handleError(error, 'xóa khoa phòng')
     },
   })
 
@@ -147,6 +148,8 @@ export function DepartmentsModule() {
       </FormDialog>
 
       <ConfirmDialog open={confirmOpen} title="Xác nhận xóa" message={`Bạn có chắc chắn muốn xóa khoa phòng "${selectedDept?.name}"?`} onClose={() => setConfirmOpen(false)} onConfirm={() => selectedDept && deleteMutation.mutate(selectedDept.id)} />
+
+      <ErrorSnackbar />
     </Box>
   )
 }

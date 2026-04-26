@@ -69,25 +69,25 @@ export interface StockReport {
 export const inventoryService = {
   getAll: async (params?: InventoryListParams): Promise<InventoryListResponse> => {
     const queryString = new URLSearchParams(params as any).toString()
-    return apiClient.get<InventoryListResponse>(`/inventory${queryString ? `?${queryString}` : ''}`)
+    return apiClient.get<InventoryListResponse>(`/api/inventory${queryString ? `?${queryString}` : ''}`)
   },
 
   getById: async (id: string): Promise<InventoryTransaction> => {
-    return apiClient.get<InventoryTransaction>(`/inventory/${id}`)
+    return apiClient.get<InventoryTransaction>(`/api/inventory/${id}`)
   },
 
   create: async (data: InventoryCreateRequest): Promise<InventoryTransaction> => {
-    return apiClient.post<InventoryTransaction>('/inventory', data)
+    return apiClient.post<InventoryTransaction>('/api/inventory', data)
   },
 
   delete: async (id: string): Promise<void> => {
-    return apiClient.delete<void>(`/inventory/${id}`)
+    return apiClient.delete<void>(`/api/inventory/${id}`)
   },
 
   getStockReport: async (fromDate?: string, toDate?: string): Promise<StockReport[]> => {
     const params = new URLSearchParams()
     if (fromDate) params.append('fromDate', fromDate)
     if (toDate) params.append('toDate', toDate)
-    return apiClient.get<StockReport[]>(`/inventory/stock-report${params.toString() ? `?${params.toString()}` : ''}`)
+    return apiClient.get<StockReport[]>(`/api/inventory/stock-report${params.toString() ? `?${params.toString()}` : ''}`)
   },
 }

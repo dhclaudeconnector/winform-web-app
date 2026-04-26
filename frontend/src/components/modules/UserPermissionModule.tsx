@@ -71,7 +71,7 @@ export function UserPermissionModule() {
   const loadUsers = async () => {
     try {
       // Giả sử có API lấy danh sách users
-      const data = await apiClient.get<User[]>('/admin/users')
+      const data = await apiClient.get<User[]>('/api/admin/users')
       setUsers(data)
     } catch (err) {
       console.error('Failed to load users:', err)
@@ -80,7 +80,7 @@ export function UserPermissionModule() {
 
   const loadRoles = async () => {
     try {
-      const data = await apiClient.get<Role[]>('/admin/roles')
+      const data = await apiClient.get<Role[]>('/api/admin/roles')
       setRoles(data)
     } catch (err) {
       console.error('Failed to load roles:', err)
@@ -89,7 +89,7 @@ export function UserPermissionModule() {
 
   const loadUserRoles = async (username: string) => {
     try {
-      const data = await apiClient.get<UserRole[]>(`/admin/users/${username}/roles`)
+      const data = await apiClient.get<UserRole[]>(`/api/admin/users/${username}/roles`)
       setUserRoles(data)
     } catch (err) {
       console.error('Failed to load user roles:', err)
@@ -111,7 +111,7 @@ export function UserPermissionModule() {
     setError('')
 
     try {
-      await apiClient.post(`/admin/users/${selectedUser.username}/roles`, {
+      await apiClient.post(`/api/admin/users/${selectedUser.username}/roles`, {
         roleId: selectedRole.id,
       })
 
@@ -131,7 +131,7 @@ export function UserPermissionModule() {
     setError('')
 
     try {
-      await apiClient.delete(`/admin/users/${selectedUser.username}/roles/${userRoleId}`)
+      await apiClient.delete(`/api/admin/users/${selectedUser.username}/roles/${userRoleId}`)
       await loadUserRoles(selectedUser.username)
     } catch (err: any) {
       setError(err.message || 'Lỗi xóa vai trò')

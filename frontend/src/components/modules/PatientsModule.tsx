@@ -9,6 +9,8 @@ import { CrudToolbar } from '@/components/common/CrudToolbar'
 import { AppGrid } from '@/components/common/AppGrid'
 import { FormDialog, ConfirmDialog } from '@/components/common/FormDialog'
 import { useAppStore } from '@/lib/store/uiStore'
+import { apiClient } from '@/lib/apiClient'
+import { useApiError } from '@/hooks/useApiError'
 
 interface Patient {
   id: string
@@ -28,40 +30,33 @@ export function PatientsModule() {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [formData, setFormData] = useState<Partial<Patient>>({})
   const [searchValue, setSearchValue] = useState('')
+  const { handleError, ErrorSnackbar } = useApiError()
 
   const { data: patients = [], isLoading } = useQuery({
     queryKey: ['patients'],
     queryFn: async () => {
-      const res = await fetch('http://localhost:3001/api/patients')
-      const json = await res.json()
-      return Array.isArray(json) ? json : (json.data || [])
+      const result = await apiClient.get<Patient[]>('/api/patients')
+      return result || []
     },
   })
 
   const createMutation = useMutation({
     mutationFn: async (data: Partial<Patient>) => {
-      const res = await fetch('http://localhost:3001/api/patients', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      })
-      return res.json()
+      return await apiClient.post<Patient>('/api/patients', data)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['patients'] })
       setDialogOpen(false)
       setFormData({})
+    },
+    onError: (error) => {
+      handleError(error, 'tạo bệnh nhân')
     },
   })
 
   const updateMutation = useMutation({
     mutationFn: async (data: Patient) => {
-      const res = await fetch(`http://localhost:3001/api/patients/${data.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      })
-      return res.json()
+      return await apiClient.put<Patient>(`/api/patients/${data.id}`, data)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['patients'] })
@@ -69,16 +64,22 @@ export function PatientsModule() {
       setFormData({})
       setSelectedPatient(null)
     },
+    onError: (error) => {
+      handleError(error, 'cập nhật bệnh nhân')
+    },
   })
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await fetch(`http://localhost:3001/api/patients/${id}`, { method: 'DELETE' })
+      await apiClient.delete(`/api/patients/${id}`)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['patients'] })
       setConfirmOpen(false)
       setSelectedPatient(null)
+    },
+    onError: (error) => {
+      handleError(error, 'xóa bệnh nhân')
     },
   })
 
@@ -159,6 +160,8 @@ export function PatientsModule() {
       </FormDialog>
 
       <ConfirmDialog open={confirmOpen} title="Xác nhận xóa" message={`Bạn có chắc chắn muốn xóa bệnh nhân "${selectedPatient?.fullName}"?`} onClose={() => setConfirmOpen(false)} onConfirm={() => selectedPatient && deleteMutation.mutate(selectedPatient.id)} />
+
+      <ErrorSnackbar />
     </Box>
   )
 }

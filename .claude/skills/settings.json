@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm audit *)",
+      "Bash(npm uninstall *)",
+      "Bash(curl -s -X POST http://localhost:3001/api/auth/login -H \"Content-Type: application/json\" -d '{\"username\":\"admin\",\"password\":\"123\",\"accountingMonth\":\"2026-04\",\"workDate\":\"2026-04-26\"}' -c /tmp/cookies.txt -v)",
+      "Bash(curl -s -X POST http://localhost:3001/api/auth/login -H \"Content-Type: application/json\" -d '{\"username\":\"admin\",\"password\":\"123\",\"accountingMonth\":\"2026-04\",\"workDate\":\"2026-04-26\"}')",
+      "Bash(taskkill /PID 28576 /F)",
+      "Bash(docker-compose up *)",
+      "Bash(docker-compose ps *)",
+      "Bash(docker-compose build *)",
+      "Bash(taskkill //PID 14196 //F)",
+      "Bash(taskkill //PID 2804 //F)",
+      "Bash(docker-compose logs *)",
+      "Bash(curl -s -I http://localhost:3000)",
+      "Bash(docker-compose down *)",
+      "Bash(./restart-docker.bat)",
+      "Bash(docker-compose restart *)",
+      "Bash(taskkill //F //PID 40776)",
+      "Bash(findstr :3001)",
+      "Bash(taskkill /F /PID 19584)",
+      "Bash(taskkill //F //PID 19584)",
+      "Bash(findstr :3000)",
+      "Bash(taskkill //F //PID 10012)",
+      "Bash(taskkill //F //PID 11104)",
+      "Bash(docker compose *)",
+      "Bash(docker exec *)",
+      "Bash(node -e \"const db = require\\('./src/config/database'\\); db.query\\('SELECT column_name, data_type FROM information_schema.columns WHERE table_schema = \\\\'current\\\\' AND table_name = \\\\'dmnhanvien\\\\' ORDER BY ordinal_position'\\).then\\(r => console.log\\(JSON.stringify\\(r.rows, null, 2\\)\\)\\).catch\\(e => console.error\\(e.message\\)\\).finally\\(\\(\\) => process.exit\\(\\)\\)\")",
+      "Bash(node -e \"const { pool } = require\\('./src/config/database'\\); pool.query\\('SELECT column_name, data_type FROM information_schema.columns WHERE table_schema = \\\\'current\\\\' AND table_name = \\\\'dmnhanvien\\\\' ORDER BY ordinal_position'\\).then\\(r => console.log\\(JSON.stringify\\(r.rows, null, 2\\)\\)\\).catch\\(e => console.error\\(e.message\\)\\).finally\\(\\(\\) => pool.end\\(\\)\\)\")"
+    ]
+  }
+}
