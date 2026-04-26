@@ -324,8 +324,10 @@ export default function NguoiDungPage() {
                 theme={customTheme}
                 rowData={employees}
                 columnDefs={columnDefs}
-                rowSelection="single"
-                suppressRowClickSelection={false}
+                rowSelection={{
+                  mode: 'singleRow',
+                  enableClickSelection: true,
+                }}
                 animateRows
                 pagination
                 paginationPageSize={100}

@@ -83,7 +83,7 @@ export function TabWorkspace() {
           ))}
         </Tabs>
       </Box>
-      <Box sx={{ flex: 1, overflow: 'auto', backgroundColor: 'background.default' }}>
+      <Box sx={{ flex: 1, overflow: 'hidden', backgroundColor: 'background.default' }}>
         {openTabs.map((tab) => (
           <Box key={tab.id} sx={{ display: tab.id === activeTabId ? 'block' : 'none', height: '100%' }}>
             {renderModule(tab.id)}

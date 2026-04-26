@@ -98,7 +98,10 @@ export function AppGrid<T = any>({
         rowData={rowData}
         columnDefs={columnDefs}
         defaultColDef={defaultColDef}
-        rowSelection="single"
+        rowSelection={{
+          mode: 'singleRow',
+          enableClickSelection: true,
+        }}
         onSelectionChanged={handleSelectionChanged}
         onRowDoubleClicked={handleRowDoubleClicked}
         onCellValueChanged={onCellValueChanged}

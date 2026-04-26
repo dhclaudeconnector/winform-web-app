@@ -146,41 +146,126 @@ export function UserPermissionModule() {
       user.fullName.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  return (
-    <Box sx={{ p: 2 }}>
-      <CrudToolbar
-        module="users"
-        onRefresh={loadUsers}
-        searchValue={searchTerm}
-        onSearchChange={setSearchTerm}
-      />
+  const handlePrint = () => {
+    const printWindow = window.open('', '_blank')
+    if (!printWindow) return
 
-      <TableContainer component={Paper} sx={{ mt: 2 }}>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell>Tài khoản</TableCell>
-              <TableCell>Họ tên</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell align="center">Thao tác</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredUsers.map((user) => (
-              <TableRow key={user.username} hover>
-                <TableCell>{user.username}</TableCell>
-                <TableCell>{user.fullName}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell align="center">
-                  <Button size="small" onClick={() => handleSelectUser(user)}>
-                    Phân quyền
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Danh sách phân quyền người dùng</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 20px; }
+          h1 { text-align: center; color: #1976d2; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+          th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+          th { background-color: #1976d2; color: white; }
+          tr:nth-child(even) { background-color: #f2f2f2; }
+          .print-date { text-align: right; font-size: 12px; color: #666; margin-top: 10px; }
+        </style>
+      </head>
+      <body>
+        <h1>DANH SÁCH PHÂN QUYỀN NGƯỜI DÙNG</h1>
+        <table>
+          <thead>
+            <tr>
+              <th>Tài khoản</th>
+              <th>Họ tên</th>
+              <th>Email</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filteredUsers.map(user => `
+              <tr>
+                <td>${user.username}</td>
+                <td>${user.fullName}</td>
+                <td>${user.email}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        <div class="print-date">Ngày in: ${new Date().toLocaleString('vi-VN')}</div>
+      </body>
+      </html>
+    `
+
+    printWindow.document.write(printContent)
+    printWindow.document.close()
+    printWindow.focus()
+    setTimeout(() => {
+      printWindow.print()
+      printWindow.close()
+    }, 250)
+  }
+
+  const handleExportExcel = () => {
+    const headers = ['Tài khoản', 'Họ tên', 'Email']
+    const rows = filteredUsers.map(user => [
+      user.username,
+      user.fullName,
+      user.email
+    ])
+
+    let csv = headers.join(',') + '\n'
+    rows.forEach(row => {
+      csv += row.map(cell => `"${cell}"`).join(',') + '\n'
+    })
+
+    const BOM = '﻿'
+    const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.download = `danh-sach-phan-quyen-${new Date().toISOString().slice(0, 10)}.csv`
+    link.click()
+  }
+
+  return (
+    <Box sx={{ height: '100%', minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <Box sx={{ flex: 1, minHeight: 0, p: 1, pb: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <Box sx={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+          <TableContainer component={Paper}>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Tài khoản</TableCell>
+                  <TableCell>Họ tên</TableCell>
+                  <TableCell>Email</TableCell>
+                  <TableCell align="center">Thao tác</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredUsers.map((user) => (
+                  <TableRow key={user.username} hover>
+                    <TableCell>{user.username}</TableCell>
+                    <TableCell>{user.fullName}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell align="center">
+                      <Button size="small" onClick={() => handleSelectUser(user)}>
+                        Phân quyền
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
+      </Box>
+      <Box sx={{ flexShrink: 0, p: 1, pt: 0, backgroundColor: 'background.default' }}>
+        <CrudToolbar
+          module="users"
+          onRefresh={loadUsers}
+          searchValue={searchTerm}
+          onSearchChange={setSearchTerm}
+          onPrint={handlePrint}
+          onExportExcel={handleExportExcel}
+          additionalMenuItems={[
+            { label: 'Nhập từ Excel', onClick: () => console.log('Nhập Excel') },
+            { label: 'Sao chép', onClick: () => console.log('Sao chép') },
+          ]}
+        />
+      </Box>
 
       {/* Dialog phân quyền user */}
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>

@@ -55,8 +55,10 @@ export function AppGrid<T extends Record<string, any>>({
         theme={customTheme}
         rowData={rowData}
         columnDefs={columnDefs}
-        rowSelection="single"
-        suppressRowClickSelection={false}
+        rowSelection={{
+          mode: 'singleRow',
+          enableClickSelection: true,
+        }}
         animateRows
         pagination
         paginationPageSize={10}

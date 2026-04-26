@@ -185,46 +185,51 @@ export function RoleManagementModule() {
   }
 
   return (
-    <Box sx={{ p: 2 }}>
-      <CrudToolbar
-        module="users"
-        onRefresh={loadRoles}
-      />
-
-      <TableContainer component={Paper} sx={{ mt: 2 }}>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell>Mã vai trò</TableCell>
-              <TableCell>Tên vai trò</TableCell>
-              <TableCell>Mô tả</TableCell>
-              <TableCell>Trạng thái</TableCell>
-              <TableCell align="center">Thao tác</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {roles.map((role) => (
-              <TableRow key={role.id} hover>
-                <TableCell>{role.code}</TableCell>
-                <TableCell>{role.name}</TableCell>
-                <TableCell>{role.description}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={role.is_active ? 'Hoạt động' : 'Ngừng'}
-                    color={role.is_active ? 'success' : 'default'}
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell align="center">
-                  <Button size="small" onClick={() => handleEditRole(role)}>
-                    Phân quyền
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+    <Box sx={{ height: '100%', minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <Box sx={{ flex: 1, minHeight: 0, p: 1, pb: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <Box sx={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+          <TableContainer component={Paper}>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Mã vai trò</TableCell>
+                  <TableCell>Tên vai trò</TableCell>
+                  <TableCell>Mô tả</TableCell>
+                  <TableCell>Trạng thái</TableCell>
+                  <TableCell align="center">Thao tác</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {roles.map((role) => (
+                  <TableRow key={role.id} hover>
+                    <TableCell>{role.code}</TableCell>
+                    <TableCell>{role.name}</TableCell>
+                    <TableCell>{role.description}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={role.is_active ? 'Hoạt động' : 'Ngừng'}
+                        color={role.is_active ? 'success' : 'default'}
+                        size="small"
+                      />
+                    </TableCell>
+                    <TableCell align="center">
+                      <Button size="small" onClick={() => handleEditRole(role)}>
+                        Phân quyền
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
+      </Box>
+      <Box sx={{ flexShrink: 0, p: 1, pt: 0, backgroundColor: 'background.default' }}>
+        <CrudToolbar
+          module="users"
+          onRefresh={loadRoles}
+        />
+      </Box>
 
       {/* Dialog phân quyền */}
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>

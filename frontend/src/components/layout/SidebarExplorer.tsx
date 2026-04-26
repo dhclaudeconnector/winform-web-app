@@ -95,9 +95,10 @@ export function SidebarExplorer() {
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
+        minHeight: 0,
       }}
     >
-      <Box sx={{ p: 1, borderBottom: '1px solid', borderColor: 'divider' }}>
+      <Box sx={{ p: 1, borderBottom: '1px solid', borderColor: 'divider', flexShrink: 0 }}>
         {(!sidebarCollapsed || isMobile) && (
           <>
             <Typography sx={{ fontSize: 12, fontWeight: 700, color: 'primary.main' }}>Ngày làm việc</Typography>

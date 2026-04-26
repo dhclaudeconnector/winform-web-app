@@ -54,6 +54,7 @@ export function AppShell({ children }: { children?: React.ReactNode }) {
             display: 'grid',
             gridTemplateColumns: sidebarCollapsed ? '60px 1fr' : '250px 1fr',
             minHeight: 0,
+            overflow: 'hidden',
             transition: 'grid-template-columns 0.3s',
           }}
         >

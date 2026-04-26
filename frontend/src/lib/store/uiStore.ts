@@ -68,6 +68,8 @@ export const useAppStore = create<AppState>()(
         currentUser: state.currentUser,
         mode: state.mode,
         sidebarCollapsed: state.sidebarCollapsed,
+        openTabs: state.openTabs,
+        activeTabId: state.activeTabId,
       }),
     }
   )
