@@ -456,3 +456,173 @@ npm run dev          # Development with nodemon
 8. **LUÔN LUÔN kiểm tra responsive** - Mobile và desktop
 9. **LUÔN LUÔN kiểm tra dark mode** - Light và dark theme
 10. **LUÔN LUÔN báo cáo đầy đủ** - Theo format ở Bước 6
+
+---
+
+## 🔤 QUI TẮC NAMING CONVENTION
+
+### Nguyên tắc chung
+
+Dự án này sử dụng **snake_case** cho database fields và API request/response để đảm bảo tính nhất quán với PostgreSQL naming convention.
+
+### Backend (Node.js/Express)
+
+**✅ ĐÚNG - Sử dụng snake_case:**
+
+```javascript
+// Controller - nhận request body
+const { name, description, is_active } = req.body
+
+// Repository - database query
+UPDATE webauth.roles
+SET name = $2, description = $3, is_active = $4
+WHERE id = $1
+
+// Response - trả về client
+return successResponse(res, {
+  id: 1,
+  code: 'ADMIN',
+  name: 'Administrator',
+  is_active: true
+})
+```
+
+**❌ SAI - Không dùng camelCase:**
+
+```javascript
+// WRONG - Không nhận camelCase từ frontend
+const { name, description, isActive } = req.body  // ❌
+
+// WRONG - Không trả về camelCase
+return successResponse(res, {
+  id: 1,
+  code: 'ADMIN',
+  name: 'Administrator',
+  isActive: true  // ❌
+})
+```
+
+### Frontend (React/TypeScript)
+
+**✅ ĐÚNG - Sử dụng snake_case cho API calls:**
+
+```typescript
+// Interface - định nghĩa type với snake_case
+interface Role {
+  id: number
+  code: string
+  name: string
+  description: string
+  is_active: boolean  // ✅ snake_case
+}
+
+// API call - gửi snake_case
+const updateMutation = useMutation({
+  mutationFn: ({ id, data }: { id: number; data: RoleFormData }) =>
+    apiClient.put<Role>(`/api/admin/roles/${id}`, {
+      name: data.name,
+      description: data.description,
+      is_active: data.is_active  // ✅ snake_case
+    })
+})
+
+// Component state - có thể dùng camelCase nội bộ
+const [formData, setFormData] = useState({
+  name: '',
+  description: '',
+  isActive: true  // OK - internal state
+})
+
+// Nhưng khi gửi API phải convert sang snake_case
+apiClient.post('/api/admin/roles', {
+  name: formData.name,
+  description: formData.description,
+  is_active: formData.isActive  // ✅ convert sang snake_case
+})
+```
+
+**❌ SAI - Không gửi camelCase cho backend:**
+
+```typescript
+// WRONG - Backend sẽ không nhận được is_active
+apiClient.put(`/api/admin/roles/${id}`, {
+  name: data.name,
+  description: data.description,
+  isActive: data.isActive  // ❌ Backend nhận is_active
+})
+```
+
+### Database (PostgreSQL)
+
+**✅ ĐÚNG - Luôn dùng snake_case:**
+
+```sql
+-- Table definition
+CREATE TABLE webauth.roles (
+  id SERIAL PRIMARY KEY,
+  code VARCHAR(50) NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  description TEXT,
+  is_active BOOLEAN DEFAULT true,  -- ✅ snake_case
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Query
+SELECT id, code, name, description, is_active
+FROM webauth.roles
+WHERE is_active = true;
+```
+
+### Checklist khi tạo API mới
+
+- [ ] **Backend controller** nhận fields với snake_case
+- [ ] **Backend repository** query database với snake_case
+- [ ] **Backend response** trả về snake_case
+- [ ] **Frontend interface** định nghĩa type với snake_case
+- [ ] **Frontend API call** gửi snake_case
+- [ ] **Test** cả create, update, delete để đảm bảo không bị mất dữ liệu
+
+### Ví dụ hoàn chỉnh
+
+**Backend - roleController.js:**
+```javascript
+async updateRole(req, res) {
+  const { id } = req.params
+  const { name, description, is_active } = req.body  // ✅ snake_case
+  
+  const result = await roleRepository.updateRole(id, name, description, is_active)
+  return successResponse(res, result.rows[0])
+}
+```
+
+**Frontend - RoleManagementModule.tsx:**
+```typescript
+interface Role {
+  id: number
+  code: string
+  name: string
+  description: string
+  is_active: boolean  // ✅ snake_case
+}
+
+const updateMutation = useMutation({
+  mutationFn: ({ id, data }: { id: number; data: Role }) =>
+    apiClient.put<Role>(`/api/admin/roles/${id}`, data)  // ✅ data đã có is_active
+})
+```
+
+### Lỗi thường gặp
+
+1. **Backend nhận `isActive` nhưng frontend gửi `is_active`** → Dữ liệu bị mất
+2. **Interface định nghĩa `isActive` nhưng API response trả về `is_active`** → Type mismatch
+3. **Một số fields dùng camelCase, một số dùng snake_case** → Không nhất quán
+
+### Khi nào được dùng camelCase?
+
+- **Component internal state** (không gửi API)
+- **Local variables** trong function
+- **React props** giữa các components
+- **Utility functions** không liên quan database
+
+**Nguyên tắc vàng:** Bất cứ khi nào data đi qua API hoặc database, phải dùng **snake_case**.
