@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm audit *)",
+      "Bash(npm uninstall *)",
+      "Bash(curl -s -X POST http://localhost:3001/api/auth/login -H \"Content-Type: application/json\" -d '{\"username\":\"admin\",\"password\":\"123\",\"accountingMonth\":\"2026-04\",\"workDate\":\"2026-04-26\"}' -c /tmp/cookies.txt -v)",
+      "Bash(curl -s -X POST http://localhost:3001/api/auth/login -H \"Content-Type: application/json\" -d '{\"username\":\"admin\",\"password\":\"123\",\"accountingMonth\":\"2026-04\",\"workDate\":\"2026-04-26\"}')",
+      "Bash(taskkill /PID 28576 /F)"
+    ]
+  }
+}

@@ -69,19 +69,15 @@ async function handleResponse<T>(response: Response): Promise<T> {
 
 /**
  * Get Authentication Headers
- * Include JWT token if available
+ * Token is now in httpOnly cookie, no need to add manually
  */
 function getAuthHeaders(skipAuth = false): HeadersInit {
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
   }
 
-  if (!skipAuth && typeof window !== 'undefined') {
-    const token = localStorage.getItem('token')
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`
-    }
-  }
+  // Token is automatically sent via httpOnly cookie
+  // No need to manually add Authorization header
 
   return headers
 }
@@ -102,6 +98,7 @@ async function fetchWithTimeout(
     const response = await fetch(url, {
       ...fetchOptions,
       signal: controller.signal,
+      credentials: 'include', // Important: send cookies with requests
     })
     return response
   } catch (error) {

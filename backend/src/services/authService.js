@@ -27,8 +27,8 @@ export const authService = {
 
     const user = result.rows[0]
 
-    // Generate JWT token with additional fields
-    const token = jwt.sign(
+    // Generate access token (short-lived)
+    const accessToken = jwt.sign(
       {
         username: user.taikhoan,
         name: user.hoten,
@@ -37,6 +37,16 @@ export const authService = {
       },
       env.jwt.secret,
       { expiresIn: env.jwt.expiresIn }
+    )
+
+    // Generate refresh token (long-lived)
+    const refreshToken = jwt.sign(
+      {
+        username: user.taikhoan,
+        type: 'refresh',
+      },
+      env.jwt.secret,
+      { expiresIn: env.jwt.refreshExpiresIn }
     )
 
     // Emit event
@@ -50,7 +60,8 @@ export const authService = {
     logger.info('Login successful', { username })
 
     return {
-      token,
+      accessToken,
+      refreshToken,
       user: {
         username: user.taikhoan,
         fullName: user.hoten,
@@ -58,6 +69,58 @@ export const authService = {
         accountingMonth: accountingMonth || new Date().toISOString().slice(0, 7),
         workDate: workDate || new Date().toISOString().slice(0, 10),
       },
+    }
+  },
+
+  /**
+   * Refresh access token using refresh token
+   */
+  async refreshToken(refreshToken) {
+    if (!refreshToken) {
+      throw new AuthenticationError('Refresh token không tồn tại')
+    }
+
+    try {
+      const decoded = jwt.verify(refreshToken, env.jwt.secret)
+
+      if (decoded.type !== 'refresh') {
+        throw new AuthenticationError('Token không hợp lệ')
+      }
+
+      // Get user info
+      const result = await authRepository.findByUsernameOnly(decoded.username)
+
+      if (result.rows.length === 0) {
+        throw new AuthenticationError('Người dùng không tồn tại')
+      }
+
+      const user = result.rows[0]
+
+      // Generate new access token
+      const accessToken = jwt.sign(
+        {
+          username: user.taikhoan,
+          name: user.hoten,
+        },
+        env.jwt.secret,
+        { expiresIn: env.jwt.expiresIn }
+      )
+
+      logger.info('Token refreshed', { username: decoded.username })
+
+      return {
+        accessToken,
+        user: {
+          username: user.taikhoan,
+          fullName: user.hoten,
+          email: user.email,
+        },
+      }
+    } catch (error) {
+      if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
+        throw new AuthenticationError('Refresh token không hợp lệ hoặc đã hết hạn')
+      }
+      throw error
     }
   },
 

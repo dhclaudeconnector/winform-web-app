@@ -6,6 +6,9 @@
       "Bash(cp -r src/lib frontend/src/)",
       "Bash(cp -r src/themes frontend/src/)",
       "Bash(cp -r src/types frontend/src/)"
+    ],
+    "additionalDirectories": [
+      "h:\\nodejs-tester\\winform-web-app\\frontend"
     ]
   }
 }

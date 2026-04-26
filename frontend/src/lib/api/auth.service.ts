@@ -11,7 +11,6 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  token: string
   user: {
     id: string
     username: string
@@ -58,8 +57,8 @@ export const authService = {
   /**
    * Refresh token
    */
-  refreshToken: async (): Promise<{ token: string }> => {
-    return apiClient.post<{ token: string }>('/auth/refresh', {})
+  refreshToken: async (): Promise<{ user: User }> => {
+    return apiClient.post<{ user: User }>('/auth/refresh', {})
   },
 
   /**

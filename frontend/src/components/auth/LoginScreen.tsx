@@ -35,9 +35,8 @@ export function LoginScreen() {
         workDate,
       })
 
-      // Store token
+      // Store user info only (token is in httpOnly cookie)
       if (remember) {
-        localStorage.setItem('token', data.token)
         localStorage.setItem('user', JSON.stringify(data.user))
       }
 
@@ -107,7 +106,7 @@ export function LoginScreen() {
                   type="month"
                   value={month}
                   onChange={(event) => setMonth(event.target.value)}
-                  InputLabelProps={{ shrink: true }}
+                  slotProps={{ inputLabel: { shrink: true } }}
                   disabled={loading}
                 />
                 <TextField
@@ -115,7 +114,7 @@ export function LoginScreen() {
                   type="date"
                   value={workDate}
                   onChange={(event) => setWorkDate(event.target.value)}
-                  InputLabelProps={{ shrink: true }}
+                  slotProps={{ inputLabel: { shrink: true } }}
                   disabled={loading}
                 />
                 <TextField

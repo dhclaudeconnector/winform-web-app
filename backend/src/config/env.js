@@ -40,11 +40,23 @@ export const env = {
   jwt: {
     secret: getEnvVar('JWT_SECRET', 'your-secret-key-change-in-production'),
     expiresIn: getEnvVar('JWT_EXPIRES_IN', '24h'),
+    refreshExpiresIn: getEnvVar('JWT_REFRESH_EXPIRES_IN', '7d'),
   },
 
   // CORS
   cors: {
     origin: getEnvVar('CORS_ORIGIN', 'http://localhost:3000'),
+  },
+
+  // Rate Limiting
+  rateLimit: {
+    windowMs: getEnvNumber('RATE_LIMIT_WINDOW_MS', 900000), // 15 minutes
+    maxRequests: getEnvNumber('RATE_LIMIT_MAX_REQUESTS', 5),
+  },
+
+  // Cookie
+  cookie: {
+    secret: getEnvVar('COOKIE_SECRET', 'your-cookie-secret-change-in-production'),
   },
 
   // Logging

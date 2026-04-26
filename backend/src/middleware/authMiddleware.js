@@ -5,17 +5,24 @@ import { logger } from '../utils/logger.js'
 
 /**
  * Authentication Middleware
- * Verify JWT token and attach user to request
+ * Verify JWT token from cookie and attach user to request
  */
 export function authMiddleware(req, res, next) {
-  const authHeader = req.headers.authorization
+  // Try to get token from cookie first, then fallback to Authorization header
+  let token = req.cookies.accessToken
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  if (!token) {
+    const authHeader = req.headers.authorization
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7)
+    }
+  }
+
+  if (!token) {
     return next(new AuthenticationError('Không tìm thấy token xác thực'))
   }
 
   try {
-    const token = authHeader.substring(7)
     const decoded = jwt.verify(token, env.jwt.secret)
     req.user = decoded
     next()

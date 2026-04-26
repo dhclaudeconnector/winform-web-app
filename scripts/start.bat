@@ -12,7 +12,7 @@ echo.
 @REM )
 
 echo Starting backend...
-cd backend
+cd ..\backend
 if not exist "node_modules" (
   echo Installing backend dependencies...
   call npm install
@@ -42,7 +42,7 @@ if not exist ".env.local" (
 timeout /t 3 /nobreak >nul
 start "Frontend Server" cmd /k npm run dev
 
-cd ..
+cd ..\scripts
 
 echo.
 echo ========================================
