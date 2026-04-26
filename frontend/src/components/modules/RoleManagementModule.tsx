@@ -17,13 +17,13 @@ import {
 } from '@mui/material'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { ColDef } from 'ag-grid-community'
-import { Shield, Users } from 'lucide-react'
 import { AppGrid } from '@/components/common/AppGrid'
 import { CrudToolbar } from '@/components/common/CrudToolbar'
 import { ConfirmDialog, FormDialog } from '@/components/common/FormDialog'
 import { useApiError } from '@/hooks/useApiError'
 import { agGridVietnamese } from '@/lib/agGridVietnamese'
 import { apiClient } from '@/lib/apiClient'
+import { useAppStore } from '@/lib/store/uiStore'
 
 interface Role {
   id: number
@@ -380,23 +380,22 @@ export function RoleManagementModule() {
           onRefresh={() => queryClient.invalidateQueries({ queryKey: ['roles'] })}
           onPrint={handlePrint}
           onExportExcel={handleExportExcel}
-          onSearch={setSearchText}
+          onClose={() => {
+            const closeTab = useAppStore.getState().closeTab
+            closeTab('role-management')
+          }}
           searchValue={searchText}
-          searchPlaceholder="Tìm mã, tên, mô tả..."
-          disableEdit={!selectedRole}
-          disableDelete={!selectedRole}
-          extensibleMenuItems={[
+          onSearchChange={setSearchText}
+          editDisabled={!selectedRole}
+          deleteDisabled={!selectedRole}
+          additionalMenuItems={[
             {
               label: 'Quản lý quyền',
-              icon: Shield,
               onClick: handleOpenPermissionDialog,
-              disabled: !selectedRole,
             },
             {
               label: 'Xem users',
-              icon: Users,
               onClick: () => setUsersDialogOpen(true),
-              disabled: !selectedRole,
             },
           ]}
         />

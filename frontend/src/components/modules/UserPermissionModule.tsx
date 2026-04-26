@@ -29,6 +29,7 @@ import {
 import { Trash2, UserPlus } from 'lucide-react'
 import { CrudToolbar } from '@/components/common/CrudToolbar'
 import { apiClient } from '@/lib/apiClient'
+import { useAppStore } from '@/lib/store/uiStore'
 
 interface User {
   username: string
@@ -260,6 +261,10 @@ export function UserPermissionModule() {
           onSearchChange={setSearchTerm}
           onPrint={handlePrint}
           onExportExcel={handleExportExcel}
+          onClose={() => {
+            const closeTab = useAppStore.getState().closeTab
+            closeTab('user-permission')
+          }}
           additionalMenuItems={[
             { label: 'Nhập từ Excel', onClick: () => console.log('Nhập Excel') },
             { label: 'Sao chép', onClick: () => console.log('Sao chép') },
