@@ -2,6 +2,7 @@
 
 import { Box, Typography } from '@mui/material'
 import { useAppStore } from '@/lib/store/uiStore'
+import { BUILD_VERSION } from '@/lib/version'
 
 export function StatusBar() {
   const mode = useAppStore((state) => state.mode)
@@ -20,7 +21,9 @@ export function StatusBar() {
       }}
     >
       <Typography sx={{ fontSize: 11, color: 'text.primary' }}>Sẵn sàng</Typography>
-      <Typography sx={{ fontSize: 11, color: 'text.secondary' }}>Hospital Management System v1.1</Typography>
+      <Typography sx={{ fontSize: 11, color: 'text.secondary' }}>
+        Hospital Management System v{BUILD_VERSION}
+      </Typography>
     </Box>
   )
 }

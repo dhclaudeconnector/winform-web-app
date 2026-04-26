@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
 interface TabItem {
   id: string
@@ -19,9 +20,11 @@ interface TabStore {
 
 const MAX_TABS = 12
 
-export const useTabStore = create<TabStore>((set, get) => ({
-  tabs: [],
-  activeTabId: null,
+export const useTabStore = create<TabStore>()(
+  persist(
+    (set, get) => ({
+      tabs: [],
+      activeTabId: null,
 
   addTab: (tab) => {
     const { tabs } = get()
@@ -58,4 +61,10 @@ export const useTabStore = create<TabStore>((set, get) => ({
     set((state) => ({
       tabs: state.tabs.map((tab) => (tab.id === id ? { ...tab, ...updates } : tab)),
     })),
-}))
+    }),
+    {
+      name: 'tab-storage',
+      version: 1,
+    }
+  )
+)

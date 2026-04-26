@@ -46,6 +46,14 @@ async function handleResponse<T>(response: Response): Promise<T> {
       status: response.status
     }))
 
+    // Kiểm tra lỗi authentication
+    if (error.code === 'AUTHENTICATION_ERROR' || response.status === 401) {
+      // Redirect về trang đăng nhập
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login'
+      }
+    }
+
     throw new ApiError(
       response.status,
       error.message || 'Request failed',
@@ -57,6 +65,13 @@ async function handleResponse<T>(response: Response): Promise<T> {
   const data: ApiResponse<T> = await response.json()
 
   if (!data.success) {
+    // Kiểm tra lỗi authentication trong response body
+    if (data.message === 'Token không hợp lệ' || (data as any).code === 'AUTHENTICATION_ERROR') {
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login'
+      }
+    }
+
     throw new ApiError(
       response.status,
       data.message || 'Request failed',
