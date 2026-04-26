@@ -2,9 +2,10 @@
 
 import React from 'react'
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, IconButton, Stack, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material'
-import { ChevronDown, FolderOpen, Moon, Sun, PanelLeftClose, PanelLeftOpen, LogOut, User } from 'lucide-react'
-import { APP_CONFIG } from '@/lib/config/appConfig'
+import { ChevronDown, FolderOpen, Moon, Sun, PanelLeftClose, PanelLeftOpen, LogOut, User, Star, StarOff } from 'lucide-react'
 import { useAppStore } from '@/lib/store/uiStore'
+import { useUserModules, useFavorites } from '@/lib/hooks/usePermission'
+import { usePermissionStore } from '@/lib/store/permissionStore'
 
 export function SidebarExplorer() {
   const theme = useTheme()
@@ -18,17 +19,43 @@ export function SidebarExplorer() {
   const logout = useAppStore((state) => state.logout)
   const [expandedSections, setExpandedSections] = React.useState<string[]>([])
 
+  // Load modules từ permissions
+  const { modules, isLoaded } = useUserModules()
+  const { favorites, addFavorite, removeFavorite } = useFavorites()
+  const clearPermissions = usePermissionStore((state) => state.clearPermissions)
+
+  // Debug: Log modules
+  React.useEffect(() => {
+    console.log('SidebarExplorer - modules:', modules)
+    console.log('SidebarExplorer - isLoaded:', isLoaded)
+    console.log('SidebarExplorer - favorites:', favorites)
+  }, [modules, isLoaded, favorites])
+
+  // Tổ chức modules theo sections
+  const modulesBySection = React.useMemo(() => {
+    const sections: Record<string, typeof modules> = {}
+    modules.forEach((module) => {
+      const section = module.section || 'Khác'
+      if (!sections[section]) {
+        sections[section] = []
+      }
+      sections[section].push(module)
+    })
+    return sections
+  }, [modules])
+
   React.useEffect(() => {
     if (!sidebarCollapsed || isMobile) {
-      setExpandedSections(Object.keys(APP_CONFIG.sections))
+      setExpandedSections(['Thường dùng', ...Object.keys(modulesBySection)])
     } else {
       setExpandedSections([])
     }
-  }, [sidebarCollapsed, isMobile])
+  }, [sidebarCollapsed, isMobile, modulesBySection])
 
   const handleLogout = () => {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
+    clearPermissions()
     logout()
   }
 
@@ -38,7 +65,23 @@ export function SidebarExplorer() {
     )
   }
 
-  // On mobile, don't show collapse button
+  const isFavorite = (moduleCode: string) => {
+    return favorites.some((fav) => fav.code === moduleCode)
+  }
+
+  const handleToggleFavorite = async (moduleCode: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    try {
+      if (isFavorite(moduleCode)) {
+        await removeFavorite(moduleCode)
+      } else {
+        await addFavorite(moduleCode)
+      }
+    } catch (error) {
+      console.error('Failed to toggle favorite:', error)
+    }
+  }
+
   const showCollapseButton = !isMobile
 
   return (
@@ -69,7 +112,51 @@ export function SidebarExplorer() {
       </Box>
 
       <Box sx={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
-        {Object.entries(APP_CONFIG.sections as Record<string, string[]>).map(([section, moduleIds]) => (
+        {/* Section Thường dùng */}
+        {favorites.length > 0 && (
+          <Accordion
+            expanded={expandedSections.includes('Thường dùng')}
+            onChange={handleAccordionChange('Thường dùng')}
+            disableGutters
+            sx={{ backgroundColor: 'transparent' }}
+          >
+            <AccordionSummary expandIcon={(!sidebarCollapsed || isMobile) && <ChevronDown size={16} />}>
+              {sidebarCollapsed && !isMobile ? (
+                <Tooltip title="Thường dùng" placement="right">
+                  <Star size={20} />
+                </Tooltip>
+              ) : (
+                <Typography sx={{ fontWeight: 700, fontSize: 13, color: 'warning.main' }}>⭐ Thường dùng</Typography>
+              )}
+            </AccordionSummary>
+            {(!sidebarCollapsed || isMobile) && (
+              <AccordionDetails sx={{ p: 0.5 }}>
+                <Stack spacing={0.5}>
+                  {favorites.map((module) => (
+                    <Box key={module.code} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <Button
+                        onClick={() => openModule(module.code, module.name)}
+                        startIcon={<FolderOpen size={16} />}
+                        sx={{ color: 'text.primary', justifyContent: 'flex-start', flex: 1 }}
+                      >
+                        {module.name}
+                      </Button>
+                      <IconButton
+                        size="small"
+                        onClick={(e) => handleToggleFavorite(module.code, e)}
+                      >
+                        <Star size={14} fill="currentColor" />
+                      </IconButton>
+                    </Box>
+                  ))}
+                </Stack>
+              </AccordionDetails>
+            )}
+          </Accordion>
+        )}
+
+        {/* Các sections khác */}
+        {Object.entries(modulesBySection).map(([section, sectionModules]) => (
         <Accordion
           key={section}
           expanded={expandedSections.includes(section)}
@@ -89,20 +176,27 @@ export function SidebarExplorer() {
           {(!sidebarCollapsed || isMobile) && (
             <AccordionDetails sx={{ p: 0.5 }}>
               <Stack spacing={0.5}>
-                {moduleIds.map((moduleId) => {
-                  const module = APP_CONFIG.modules.find((item) => item.id === moduleId)
-                  if (!module) return null
-                  return (
+                {sectionModules.map((module) => (
+                  <Box key={module.code} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <Button
-                      key={module.id}
-                      onClick={() => openModule(module.id, module.title)}
+                      onClick={() => openModule(module.code, module.name)}
                       startIcon={<FolderOpen size={16} />}
-                      sx={{ color: 'text.primary', justifyContent: 'flex-start' }}
+                      sx={{ color: 'text.primary', justifyContent: 'flex-start', flex: 1 }}
                     >
-                      {module.title}
+                      {module.name}
                     </Button>
-                  )
-                })}
+                    <IconButton
+                      size="small"
+                      onClick={(e) => handleToggleFavorite(module.code, e)}
+                    >
+                      {isFavorite(module.code) ? (
+                        <Star size={14} fill="currentColor" />
+                      ) : (
+                        <StarOff size={14} />
+                      )}
+                    </IconButton>
+                  </Box>
+                ))}
               </Stack>
             </AccordionDetails>
           )}

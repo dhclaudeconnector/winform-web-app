@@ -4,16 +4,18 @@ import { Box, Button, Card, CardContent, Checkbox, FormControlLabel, Stack, Text
 import { LockKeyhole, LogIn } from 'lucide-react'
 import { APP_CONFIG } from '@/lib/config/appConfig'
 import { useAppStore } from '@/lib/store/uiStore'
+import { usePermissionStore } from '@/lib/store/permissionStore'
 import { authService } from '@/lib/api'
 import { ApiError } from '@/lib/apiClient'
 import { useState } from 'react'
 
 export function LoginScreen() {
   const login = useAppStore((state) => state.login)
+  const loadPermissions = usePermissionStore((state) => state.loadPermissions)
   const [username, setUsername] = useState('admin')
   const [password, setPassword] = useState('123')
   const [month, setMonth] = useState('2026-04')
-  const [workDate, setWorkDate] = useState('2026-04-25')
+  const [workDate, setWorkDate] = useState('2026-04-26')
   const [remember, setRemember] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -35,10 +37,8 @@ export function LoginScreen() {
         workDate,
       })
 
-      // Store user info only (token is in httpOnly cookie)
-      if (remember) {
-        localStorage.setItem('user', JSON.stringify(data.user))
-      }
+      // Load permissions, modules, favorites
+      await loadPermissions()
 
       // Update app state
       login(data.user.username)

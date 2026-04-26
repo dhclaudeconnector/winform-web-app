@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
 interface Tab {
   id: string
@@ -21,17 +22,19 @@ interface AppState {
   setActiveTab: (id: string) => void
 }
 
-export const useAppStore = create<AppState>((set) => ({
-  isAuthenticated: false,
-  currentUser: null,
-  mode: 'light',
-  sidebarCollapsed: false,
-  openTabs: [],
-  activeTabId: null,
+export const useAppStore = create<AppState>()(
+  persist(
+    (set) => ({
+      isAuthenticated: false,
+      currentUser: null,
+      mode: 'light',
+      sidebarCollapsed: false,
+      openTabs: [],
+      activeTabId: null,
 
-  login: (username: string) => set({ isAuthenticated: true, currentUser: username }),
+      login: (username: string) => set({ isAuthenticated: true, currentUser: username }),
 
-  logout: () => set({ isAuthenticated: false, currentUser: null, openTabs: [], activeTabId: null }),
+      logout: () => set({ isAuthenticated: false, currentUser: null, openTabs: [], activeTabId: null }),
 
   toggleMode: () => set((state) => ({ mode: state.mode === 'light' ? 'dark' : 'light' })),
 
@@ -57,4 +60,15 @@ export const useAppStore = create<AppState>((set) => ({
     }),
 
   setActiveTab: (id: string) => set({ activeTabId: id }),
-}))
+    }),
+    {
+      name: 'app-storage',
+      partialize: (state) => ({
+        isAuthenticated: state.isAuthenticated,
+        currentUser: state.currentUser,
+        mode: state.mode,
+        sidebarCollapsed: state.sidebarCollapsed,
+      }),
+    }
+  )
+)

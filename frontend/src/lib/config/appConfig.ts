@@ -14,9 +14,11 @@ export const APP_CONFIG = {
     { id: 'doctors', title: 'Quản lý bác sĩ' },
     { id: 'appointments', title: 'Quản lý lịch hẹn' },
     { id: 'medical-records', title: 'Hồ sơ bệnh án' },
+    { id: 'role-management', title: 'Quản lý vai trò' },
+    { id: 'user-permissions', title: 'Phân quyền người dùng' },
   ],
   sections: {
-    'Quản trị hệ thống': ['users', 'departments'],
+    'Quản trị hệ thống': ['users', 'departments', 'role-management', 'user-permissions'],
     'Quản lý khám bệnh': ['patients', 'doctors', 'appointments'],
     'Hồ sơ y tế': ['medical-records'],
   },

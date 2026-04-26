@@ -3,8 +3,10 @@
 import { Button, Stack, TextField, Menu, MenuItem, IconButton, InputAdornment } from '@mui/material'
 import { Plus, Pencil, Trash2, Save, X, ChevronLeft, ChevronRight, Search, Printer, FileSpreadsheet, MoreVertical, RefreshCw, XCircle } from 'lucide-react'
 import { useState, type MouseEvent } from 'react'
+import { PermissionGuard } from './PermissionGuard'
 
 interface CrudToolbarProps {
+  module?: string // Module code để tự động check quyền
   onAdd?: () => void
   onEdit?: () => void
   onDelete?: () => void
@@ -55,19 +57,45 @@ export function CrudToolbar(props: CrudToolbarProps) {
       }}
     >
       {props.onAdd ? (
-        <Button startIcon={<Plus size={16} />} onClick={props.onAdd}>
-          Thêm
-        </Button>
+        props.module ? (
+          <PermissionGuard module={props.module} action="CREATE">
+            <Button startIcon={<Plus size={16} />} onClick={props.onAdd}>
+              Thêm
+            </Button>
+          </PermissionGuard>
+        ) : (
+          <Button startIcon={<Plus size={16} />} onClick={props.onAdd}>
+            Thêm
+          </Button>
+        )
       ) : null}
+
       {props.onEdit ? (
-        <Button startIcon={<Pencil size={16} />} onClick={props.onEdit} disabled={props.editDisabled}>
-          Sửa
-        </Button>
+        props.module ? (
+          <PermissionGuard module={props.module} action="EDIT">
+            <Button startIcon={<Pencil size={16} />} onClick={props.onEdit} disabled={props.editDisabled}>
+              Sửa
+            </Button>
+          </PermissionGuard>
+        ) : (
+          <Button startIcon={<Pencil size={16} />} onClick={props.onEdit} disabled={props.editDisabled}>
+            Sửa
+          </Button>
+        )
       ) : null}
+
       {props.onDelete ? (
-        <Button startIcon={<Trash2 size={16} />} onClick={props.onDelete} disabled={props.deleteDisabled}>
-          Xóa
-        </Button>
+        props.module ? (
+          <PermissionGuard module={props.module} action="DELETE">
+            <Button startIcon={<Trash2 size={16} />} onClick={props.onDelete} disabled={props.deleteDisabled} color="error">
+              Xóa
+            </Button>
+          </PermissionGuard>
+        ) : (
+          <Button startIcon={<Trash2 size={16} />} onClick={props.onDelete} disabled={props.deleteDisabled} color="error">
+            Xóa
+          </Button>
+        )
       ) : null}
       {props.onSave ? (
         <Button startIcon={<Save size={16} />} onClick={props.onSave} disabled={props.saveDisabled} variant="contained">
@@ -90,14 +118,30 @@ export function CrudToolbar(props: CrudToolbarProps) {
         </Button>
       ) : null}
       {props.onPrint ? (
-        <Button startIcon={<Printer size={16} />} onClick={props.onPrint}>
-          In
-        </Button>
+        props.module ? (
+          <PermissionGuard module={props.module} action="PRINT">
+            <Button startIcon={<Printer size={16} />} onClick={props.onPrint}>
+              In
+            </Button>
+          </PermissionGuard>
+        ) : (
+          <Button startIcon={<Printer size={16} />} onClick={props.onPrint}>
+            In
+          </Button>
+        )
       ) : null}
       {props.onExportExcel ? (
-        <Button startIcon={<FileSpreadsheet size={16} />} onClick={props.onExportExcel}>
-          Xuất Excel
-        </Button>
+        props.module ? (
+          <PermissionGuard module={props.module} action="EXPORT">
+            <Button startIcon={<FileSpreadsheet size={16} />} onClick={props.onExportExcel}>
+              Xuất Excel
+            </Button>
+          </PermissionGuard>
+        ) : (
+          <Button startIcon={<FileSpreadsheet size={16} />} onClick={props.onExportExcel}>
+            Xuất Excel
+          </Button>
+        )
       ) : null}
       {props.onRefresh ? (
         <Button startIcon={<RefreshCw size={16} />} onClick={props.onRefresh}>

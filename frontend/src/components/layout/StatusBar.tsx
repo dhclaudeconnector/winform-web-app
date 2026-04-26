@@ -20,7 +20,7 @@ export function StatusBar() {
       }}
     >
       <Typography sx={{ fontSize: 11, color: 'text.primary' }}>Sẵn sàng</Typography>
-      <Typography sx={{ fontSize: 11, color: 'text.secondary' }}>Hospital Management System v1.0</Typography>
+      <Typography sx={{ fontSize: 11, color: 'text.secondary' }}>Hospital Management System v1.1</Typography>
     </Box>
   )
 }

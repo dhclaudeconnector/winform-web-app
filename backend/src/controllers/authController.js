@@ -14,20 +14,23 @@ export const authController = {
     // Set httpOnly cookies
     res.cookie('accessToken', result.accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: false, // Set to false for localhost development
+      sameSite: 'lax',
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     })
 
     res.cookie('refreshToken', result.refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: false, // Set to false for localhost development
+      sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     })
 
     return ApiResponse.success(res, {
       user: result.user,
+      permissions: result.permissions,
+      modules: result.modules,
+      favorites: result.favorites,
     }, 'Đăng nhập thành công')
   }),
 
@@ -42,8 +45,8 @@ export const authController = {
     // Set new access token cookie
     res.cookie('accessToken', result.accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: false, // Set to false for localhost development
+      sameSite: 'lax',
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     })
 

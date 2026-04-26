@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { authRepository } from '../repositories/authRepository.js'
+import { permissionService } from './permissionService.js'
 import { eventBus } from '../events/eventBus.js'
 import { AuthenticationError, ValidationError } from '../utils/errors.js'
 import { env } from '../config/env.js'
@@ -26,6 +27,13 @@ export const authService = {
     }
 
     const user = result.rows[0]
+
+    // Lấy permissions, modules, favorites của user
+    const [permissions, modules, favorites] = await Promise.all([
+      permissionService.getUserPermissions(user.taikhoan),
+      permissionService.getUserModules(user.taikhoan),
+      permissionService.getUserFavorites(user.taikhoan),
+    ])
 
     // Generate access token (short-lived)
     const accessToken = jwt.sign(
@@ -69,6 +77,9 @@ export const authService = {
         accountingMonth: accountingMonth || new Date().toISOString().slice(0, 7),
         workDate: workDate || new Date().toISOString().slice(0, 10),
       },
+      permissions,
+      modules,
+      favorites,
     }
   },
 

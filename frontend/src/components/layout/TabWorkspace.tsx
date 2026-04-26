@@ -8,6 +8,8 @@ import dynamic from 'next/dynamic'
 const UsersModule = dynamic(() => import('@/components/modules/UsersModule').then((mod) => ({ default: mod.UsersModule })), { ssr: false })
 const DepartmentsModule = dynamic(() => import('@/components/modules/DepartmentsModule').then((mod) => ({ default: mod.DepartmentsModule })), { ssr: false })
 const PatientsModule = dynamic(() => import('@/components/modules/PatientsModule').then((mod) => ({ default: mod.PatientsModule })), { ssr: false })
+const RoleManagementModule = dynamic(() => import('@/components/modules/RoleManagementModule').then((mod) => ({ default: mod.RoleManagementModule })), { ssr: false })
+const UserPermissionModule = dynamic(() => import('@/components/modules/UserPermissionModule').then((mod) => ({ default: mod.UserPermissionModule })), { ssr: false })
 
 export function TabWorkspace() {
   const openTabs = useAppStore((state) => state.openTabs)
@@ -24,6 +26,10 @@ export function TabWorkspace() {
         return <DepartmentsModule />
       case 'patients':
         return <PatientsModule />
+      case 'role-management':
+        return <RoleManagementModule />
+      case 'user-permissions':
+        return <UserPermissionModule />
       default:
         return <Box sx={{ p: 2, color: 'text.primary' }}>Module: {moduleId}</Box>
     }

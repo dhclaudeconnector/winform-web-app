@@ -5,11 +5,15 @@ import helmet from 'helmet'
 import cookieParser from 'cookie-parser'
 import rateLimit from 'express-rate-limit'
 import authRoutes from './routes/auth.routes.js'
+import permissionRoutes from './routes/permission.routes.js'
+import adminRolesRoutes from './routes/admin/roles.routes.js'
+import updateRoutes from './routes/update.routes.js'
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js'
 import { requestLogger } from './middleware/requestLogger.js'
 import { sanitizeInput } from './middleware/sanitize.js'
 import { env } from './config/env.js'
 import { logger } from './utils/logger.js'
+import { gitUpdateChecker } from './services/gitUpdateChecker.js'
 
 const app = express()
 
@@ -50,6 +54,9 @@ app.get('/health', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes)
+app.use('/api/permissions', permissionRoutes)
+app.use('/api/admin', adminRolesRoutes)
+app.use('/api/update', updateRoutes)
 
 // 404 handler
 app.use(notFoundHandler)
@@ -64,6 +71,16 @@ app.listen(env.port, () => {
     environment: env.nodeEnv,
     url: `http://localhost:${env.port}`,
   })
+
+  // Start auto-update checker
+  if (process.env.UPDATE_CHECK_ENABLED === 'true') {
+    gitUpdateChecker.startAutoCheck((updateInfo) => {
+      if (updateInfo?.hasUpdate) {
+        logger.info(`New version available: ${updateInfo.latest}`)
+        // Notification will be shown in admin UI
+      }
+    })
+  }
 })
 
 // Handle unhandled promise rejections

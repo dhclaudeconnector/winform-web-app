@@ -5,9 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch src/server.js",
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "migration:create": "node ../scripts/create-migration.js",
+    "migration:run": "node -e \"import('./src/services/migrationService.js').then(m => m.migrationService.runAutoMigrations())\"",
+    "migration:status": "node -e \"import('./src/services/migrationService.js').then(m => m.migrationService.getStatus().then(s => console.log(JSON.stringify(s, null, 2))))\"",
+    "build:release": "node ../scripts/build-release.js",
+    "release:publish": "node ../scripts/publish-release.js"
   },
   "dependencies": {
+    "adm-zip": "^0.5.17",
     "bcryptjs": "^3.0.3",
     "compression": "^1.8.1",
     "cookie-parser": "^1.4.7",

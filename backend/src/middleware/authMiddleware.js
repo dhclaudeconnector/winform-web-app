@@ -59,3 +59,6 @@ export function optionalAuth(req, res, next) {
     next()
   }
 }
+
+// Alias for backward compatibility
+export const authenticate = authMiddleware

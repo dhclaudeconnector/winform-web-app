@@ -1,0 +1,7 @@
+{
+  "version": "1.0.0",
+  "buildDate": "2026-04-26T05:17:00.000Z",
+  "gitCommit": "8e35285",
+  "environment": "production",
+  "description": "Initial release with permission system"
+}

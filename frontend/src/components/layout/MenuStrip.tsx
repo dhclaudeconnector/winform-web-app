@@ -3,11 +3,13 @@
 import { Box, Menu, MenuItem, Typography } from '@mui/material'
 import { useState, type MouseEvent } from 'react'
 import { useAppStore } from '@/lib/store/uiStore'
+import { usePermissionStore } from '@/lib/store/permissionStore'
+import { authService } from '@/lib/api'
 
 const menuItems = [
   {
     label: 'Hệ thống',
-    items: ['Đăng nhập', 'Đăng xuất', 'Đổi mật khẩu', 'Cấu hình', 'Thoát'],
+    items: ['Đăng xuất', 'Đổi mật khẩu', 'Cấu hình'],
   },
   {
     label: 'Quản trị người dùng',
@@ -33,6 +35,8 @@ const menuItems = [
 
 export function MenuStrip() {
   const mode = useAppStore((state) => state.mode)
+  const logout = useAppStore((state) => state.logout)
+  const clearPermissions = usePermissionStore((state) => state.clearPermissions)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [activeMenu, setActiveMenu] = useState<string | null>(null)
 
@@ -44,6 +48,21 @@ export function MenuStrip() {
   const handleMenuClose = () => {
     setAnchorEl(null)
     setActiveMenu(null)
+  }
+
+  const handleMenuItemClick = async (item: string) => {
+    handleMenuClose()
+
+    if (item === 'Đăng xuất') {
+      try {
+        await authService.logout()
+      } catch (error) {
+        // Ignore logout errors
+      } finally {
+        clearPermissions()
+        logout()
+      }
+    }
   }
 
   return (
@@ -90,7 +109,7 @@ export function MenuStrip() {
             }}
           >
             {menu.items.map((item) => (
-              <MenuItem key={item} onClick={handleMenuClose} sx={{ fontSize: 13 }}>
+              <MenuItem key={item} onClick={() => handleMenuItemClick(item)} sx={{ fontSize: 13 }}>
                 {item}
               </MenuItem>
             ))}

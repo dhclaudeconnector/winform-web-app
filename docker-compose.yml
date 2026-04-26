@@ -13,6 +13,21 @@ services:
     networks:
       - winform-network
     restart: unless-stopped
+    volumes:
+      # Mount source code để hot reload
+      - ./backend/src:/app/src
+      # Update system volumes
+      - ./backups:/app/backups
+      - ./update-temp:/app/update-temp
+      - ./version.json:/app/version.json
+      # Exclude node_modules để tránh conflict
+      - /app/node_modules
+    environment:
+      - UPDATE_CHECK_ENABLED=${UPDATE_CHECK_ENABLED:-false}
+      - UPDATE_CHECK_INTERVAL=${UPDATE_CHECK_INTERVAL:-21600000}
+      - GIT_RELEASE_URL=${GIT_RELEASE_URL:-}
+      - GIT_ACCESS_TOKEN=${GIT_ACCESS_TOKEN:-}
+      - DEPLOYMENT_TYPE=docker
 
   frontend:
     build:
@@ -28,6 +43,13 @@ services:
     networks:
       - winform-network
     restart: unless-stopped
+    volumes:
+      # Mount source code để hot reload
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      # Exclude các thư mục build
+      - /app/node_modules
+      - /app/.next
 
 networks:
   winform-network:

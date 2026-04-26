@@ -47,3 +47,18 @@ export class ApiResponse {
     })
   }
 }
+
+/**
+ * Helper functions for backward compatibility
+ */
+export const successResponse = (res, data = null, message = 'Success', statusCode = 200) => {
+  return ApiResponse.success(res, data, message, statusCode)
+}
+
+export const errorResponse = (res, message = 'Error', statusCode = 500, errors = null) => {
+  return res.status(statusCode).json({
+    success: false,
+    message,
+    errors,
+  })
+}
