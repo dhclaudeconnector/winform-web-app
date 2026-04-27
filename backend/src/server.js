@@ -9,6 +9,7 @@ import permissionRoutes from './routes/permission.routes.js'
 import adminRolesRoutes from './routes/admin/roles.routes.js'
 import updateRoutes from './routes/update.routes.js'
 import nhanvienRoutes from './routes/nhanvien.routes.js'
+import dmdonviRoutes from './routes/dmdonvi.routes.js'
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js'
 import { requestLogger } from './middleware/requestLogger.js'
 import { sanitizeInput } from './middleware/sanitize.js'
@@ -59,6 +60,7 @@ app.use('/api/permissions', permissionRoutes)
 app.use('/api/admin', adminRolesRoutes)
 app.use('/api/update', updateRoutes)
 app.use('/api/nhanvien', nhanvienRoutes)
+app.use('/api/dmdonvi', dmdonviRoutes)
 
 // 404 handler
 app.use(notFoundHandler)
